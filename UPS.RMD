@@ -1,0 +1,46 @@
+---
+title: "UPS"
+author: "Yuping HE, Tianyi Wang"
+date: "May 2, 2016"
+output: html_document
+---
+
+load the data
+```{r}
+library(forecast)
+ups <- read.csv("UpsAirFinanceDivision.csv", sep=",")
+ups <- ts(ups, start=c(1989,1), frequency = 12)
+ups_train <- ups[1:108,]
+ups_test <- ups[109:120,]
+ups_train<- ts(ups_train, start=c(1989,1), frequency = 12)
+ups_test <- ts(ups_test, start=c(1998,1), frequency = 12)
+```
+
+
+```{r}
+tsdisplay(ups_train)
+model <- auto.arima(ups_train)
+model
+tsdisplay(residuals(model))
+```
+
+Predict
+```{r}
+pred <- forecast(model, h=1*12)
+
+plot(pred)
+lines(ups_test)
+lines(fitted(model), col='red')
+
+accuracy(pred, ups_test)
+```
+
+Forecast for 1999
+```{r}
+pred_1999 <- forecast(model, h=2*12)
+pred_1999
+plot(pred_1999)
+lines(ups)
+lines(fitted(model), col='red')
+```
+
